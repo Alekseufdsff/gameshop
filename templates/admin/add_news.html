@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Добавить новость - Админ панель{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-newspaper mr-4 text-blue-500"></i>Добавить новость
+                </h1>
+                <p class="text-gray-600 mt-2">Создание новой новости для главной страницы</p>
+            </div>
+            <a href="{{ url_for('admin.dashboard') }}" class="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>Назад
+            </a>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-heading mr-2"></i>Заголовок новости *
+                </label>
+                <input type="text" id="title" name="title" required
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200"
+                       placeholder="Введите заголовок новости"
+                       maxlength="200">
+                <p class="mt-1 text-sm text-gray-500">Максимум 200 символов</p>
+            </div>
+
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-align-left mr-2"></i>Содержание новости *
+                </label>
+                <textarea id="content" name="content" required rows="12"
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-vertical"
+                          placeholder="Введите содержание новости..."></textarea>
+                <p class="mt-1 text-sm text-gray-500">Поддерживается перенос строк. Будет отображаться как есть.</p>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="bg-gray-50 rounded-xl p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-eye mr-2"></i>Предпросмотр
+                </h3>
+                <div id="news-preview" class="bg-white p-4 rounded-lg border border-gray-200 min-h-32">
+                    <p class="text-gray-500 italic">Предпросмотр появится здесь после заполнения полей</p>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="flex space-x-4 pt-6">
+                <button type="reset" class="flex-1 bg-gray-500 hover:bg-gray-400 text-white py-3 px-6 rounded-lg transition duration-200 font-semibold">
+                    <i class="fas fa-undo mr-2"></i>Очистить
+                </button>
+                <button type="submit" class="flex-1 bg-green-500 hover:bg-green-400 text-white py-3 px-6 rounded-lg transition duration-200 font-semibold flex items-center justify-center">
+                    <i class="fas fa-paper-plane mr-2"></i>Опубликовать новость
+                </button>
+            </div>
+        </form>
+
+        <!-- Recent News -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-history mr-3 text-blue-500"></i>Последние новости
+            </h2>
+            {% set recent_news = News.query.filter_by(is_published=True).order_by(News.date_posted.desc()).limit(3).all() %}
+            {% if recent_news %}
+            <div class="space-y-4">
+                {% for news in recent_news %}
+                <div class="border border-gray-200 rounded-xl p-4 bg-white">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-gray-800">{{ news.title }}</h3>
+                            <p class="text-gray-600 text-sm mt-1 line-clamp-2">{{ news.content[:100] }}...</p>
+                            <p class="text-xs text-gray-500 mt-2">
+                                <i class="fas fa-calendar mr-1"></i>{{ news.date_posted.strftime('%d.%m.%Y %H:%M') }}
+                            </p>
+                        </div>
+                        <a href="{{ url_for('admin.delete_news', news_id=news.id) }}" 
+                           class="text-red-500 hover:text-red-700 ml-4 transition duration-200"
+                           onclick="return confirm('Удалить эту новость?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 bg-gray-50 rounded-xl">
+                <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-500">Новостей пока нет</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Live preview for news
+document.addEventListener('DOMContentLoaded', function() {
+    const titleInput = document.getElementById('title');
+    const contentInput = document.getElementById('content');
+    const preview = document.getElementById('news-preview');
+    
+    function updatePreview() {
+        const title = titleInput.value || 'Заголовок новости';
+        const content = contentInput.value || 'Содержание новости...';
+        
+        preview.innerHTML = `
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">${title}</h3>
+            <div class="text-gray-600 whitespace-pre-line">${content}</div>
+            <div class="mt-4 pt-4 border-t border-gray-200 text-sm text-gray-500">
+                <i class="fas fa-user mr-1"></i>{{ current_user.username }} • 
+                <i class="fas fa-calendar ml-2 mr-1"></i>Сегодня
+            </div>
+        `;
+    }
+    
+    titleInput.addEventListener('input', updatePreview);
+    contentInput.addEventListener('input', updatePreview);
+    
+    // Initial preview
+    updatePreview();
+});
+</script>
+{% endblock %}

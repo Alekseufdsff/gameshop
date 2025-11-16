@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Поддержка - GameShop{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white text-center">
+            <i class="fas fa-headset text-5xl mb-4"></i>
+            <h1 class="text-4xl font-bold mb-2">Служба поддержки</h1>
+            <p class="text-xl opacity-90">Мы всегда готовы помочь вам</p>
+        </div>
+
+        <div class="p-8">
+            <!-- Contact Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-blue-50 rounded-xl p-6 text-center">
+                    <i class="fab fa-telegram text-4xl text-blue-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Telegram</h3>
+                    <p class="text-gray-600 mb-4">Основной канал связи</p>
+                    <a href="https://t.me/AlekseyMainkraft" 
+                       class="bg-blue-500 hover:bg-blue-400 text-white px-6 py-3 rounded-lg transition duration-200 inline-flex items-center">
+                        <i class="fab fa-telegram mr-2"></i>@AlekseyMainkraft
+                    </a>
+                </div>
+
+                <div class="bg-green-50 rounded-xl p-6 text-center">
+                    <i class="fas fa-envelope text-4xl text-green-500 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Email</h3>
+                    <p class="text-gray-600 mb-4">Для официальных запросов</p>
+                    <a href="mailto:support@gameshop.com" 
+                       class="bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-lg transition duration-200 inline-flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>support@gameshop.com
+                    </a>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="bg-gray-50 rounded-xl p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Часто задаваемые вопросы</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                            Как происходит доставка товара?
+                        </h3>
+                        <p class="text-gray-600">
+                            После подтверждения оплаты администратором, товар (ключ игры, данные для доступа и т.д.) 
+                            будет отправлен вам в комментарии к заказу в разделе "Мои покупки".
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                            Сколько времени занимает обработка заказа?
+                        </h3>
+                        <p class="text-gray-600">
+                            Обычно обработка заказа занимает от 15 минут до 2 часов. 
+                            В редких случаях, при высокой нагрузке, обработка может занять до 24 часов.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                            Что делать, если я не получил товар?
+                        </h3>
+                        <p class="text-gray-600">
+                            Если прошло более 24 часов с момента оплаты, свяжитесь с поддержкой в Telegram. 
+                            Укажите номер заказа и мы решим вашу проблему в кратчайшие сроки.
+                        </p>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-6 border border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center">
+                            <i class="fas fa-question-circle text-blue-500 mr-3"></i>
+                            Можно ли вернуть товар?
+                        </h3>
+                        <p class="text-gray-600">
+                            Цифровые товары (ключи игр, подписки) возврату не подлежат. 
+                            В случае технических проблем мы обязательно поможем вам решить вопрос.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Hours -->
+            <div class="mt-8 bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                <div class="flex items-center">
+                    <i class="fas fa-clock text-2xl text-yellow-500 mr-4"></i>
+                    <div>
+                        <h3 class="text-lg font-semibold text-yellow-800">Время работы поддержки</h3>
+                        <p class="text-yellow-700">
+                            <span class="font-semibold">Ежедневно:</span> 10:00 - 22:00 по московскому времени<br>
+                            <span class="text-sm">Ответ в Telegram обычно в течение 15-30 минут</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

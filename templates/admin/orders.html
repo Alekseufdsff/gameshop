@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Управление заказами - Админ панель{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-shopping-cart mr-4 text-purple-500"></i>Управление заказами
+                </h1>
+                <p class="text-gray-600 mt-2">Просмотр и обработка всех заказов</p>
+            </div>
+            <a href="{{ url_for('admin.dashboard') }}" class="bg-gray-500 hover:bg-gray-400 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i>В админку
+            </a>
+        </div>
+
+        <!-- Orders Filter -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-8">
+            <div class="flex flex-wrap items-center gap-4">
+                <span class="font-semibold text-gray-700">Фильтр по статусу:</span>
+                <a href="{{ url_for('admin.orders') }}" class="px-4 py-2 rounded-lg {% if not request.args.get('status') %}bg-blue-500 text-white{% else %}bg-white text-gray-700 border{% endif %} transition duration-200">
+                    Все ({{ orders|length }})
+                </a>
+                <a href="{{ url_for('admin.orders') }}?status=pending" class="px-4 py-2 rounded-lg {% if request.args.get('status') == 'pending' %}bg-yellow-500 text-white{% else %}bg-white text-gray-700 border{% endif %} transition duration-200">
+                    Ожидают ({{ orders|selectattr('status', 'equalto', 'pending')|list|length }})
+                </a>
+                <a href="{{ url_for('admin.orders') }}?status=paid" class="px-4 py-2 rounded-lg {% if request.args.get('status') == 'paid' %}bg-green-500 text-white{% else %}bg-white text-gray-700 border{% endif %} transition duration-200">
+                    Оплачены ({{ orders|selectattr('status', 'equalto', 'paid')|list|length }})
+                </a>
+                <a href="{{ url_for('admin.orders') }}?status=cancelled" class="px-4 py-2 rounded-lg {% if request.args.get('status') == 'cancelled' %}bg-red-500 text-white{% else %}bg-white text-gray-700 border{% endif %} transition duration-200">
+                    Отменены ({{ orders|selectattr('status', 'equalto', 'cancelled')|list|length }})
+                </a>
+            </div>
+        </div>
+
+        {% if orders %}
+        <!-- Orders List -->
+        <div class="space-y-6">
+            {% for order in orders %}
+            <div class="border border-gray-200 rounded-xl p-6 hover:shadow-md transition duration-200 
+                {% if order.status == 'paid' %}bg-green-50 border-green-200
+                {% elif order.status == 'pending' %}bg-yellow-50 border-yellow-200
+                {% else %}bg-red-50 border-red-200{% endif %}">
+                
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between">
+                    <!-- Order Info -->
+                    <div class="flex-1 mb-4 lg:mb-0">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-semibold text-gray-800">{{ order.product.name }}</h3>
+                                <p class="text-gray-600">Заказ #{{ order.id }} • {{ order.order_token }}</p>
+                            </div>
+                            <span class="text-2xl font-bold text-green-600">{{ order.product.price }} ₽</span>
+                        </div>
+
+                        <!-- Customer Info -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+                            <div>
+                                <p><span class="font-semibold">Покупатель:</span> {{ order.customer_name }}</p>
+                                <p><span class="font-semibold">Пользователь:</span> {{ order.user.username }}</p>
+                                <p><span class="font-semibold">Email:</span> {{ order.customer_email }}</p>
+                            </div>
+                            <div>
+                                <p><span class="font-semibold">Telegram:</span> {{ order.tg_username }}</p>
+                                <p><span class="font-semibold">Дата заказа:</span> {{ order.purchase_date.strftime('%d.%m.%Y %H:%M') }}</p>
+                                <p><span class="font-semibold">Категория:</span> {{ order.product.category }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Admin Comment -->
+                        {% if order.admin_comment %}
+                        <div class="bg-white rounded-lg p-3 border">
+                            <p class="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                <i class="fas fa-comment mr-2 text-blue-500"></i>Ваш комментарий:
+                            </p>
+                            <p class="text-gray-600 whitespace-pre-line text-sm">{{ order.admin_comment }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Status Management -->
+                    <div class="lg:w-80 lg:pl-6 lg:border-l lg:border-gray-200">
+                        <!-- Current Status -->
+                        <div class="mb-4">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Текущий статус:</p>
+                            {% if order.status == 'paid' %}
+                                <span class="bg-green-100 text-green-800 px-3 py-2 rounded-full font-semibold inline-flex items-center">
+                                    <i class="fas fa-check-circle mr-2"></i>Оплачено
+                                </span>
+                            {% elif order.status == 'pending' %}
+                                <span class="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-full font-semibold inline-flex items-center">
+                                    <i class="fas fa-clock mr-2"></i>Ожидает обработки
+                                </span>
+                            {% else %}
+                                <span class="bg-red-100 text-red-800 px-3 py-2 rounded-full font-semibold inline-flex items-center">
+                                    <i class="fas fa-times-circle mr-2"></i>Отменено
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Status Update Form -->
+                        {% if order.status == 'pending' %}
+                        <form method="POST" action="{{ url_for('admin.update_order_status', order_id=order.id) }}" class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Изменить статус:</label>
+                                <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="paid">✅ Оплачено</option>
+                                    <option value="cancelled">❌ Отменено</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Комментарий:</label>
+                                <textarea name="comment" rows="3" 
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                                          placeholder="Напишите комментарий для покупателя (ключ игры, инструкция и т.д.)"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-400 text-white py-2 px-4 rounded-lg transition duration-200 font-semibold">
+                                <i class="fas fa-save mr-2"></i>Обновить статус
+                            </button>
+                        </form>
+                        {% else %}
+                        <div class="text-center p-4 bg-gray-100 rounded-lg">
+                            <p class="text-sm text-gray-600">Статус заказа изменен</p>
+                            {% if order.admin_comment %}
+                            <p class="text-xs text-gray-500 mt-2">Комментарий отправлен покупателю</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-2xl font-semibold text-gray-600 mb-2">Заказов нет</h3>
+            <p class="text-gray-500">Здесь появятся заказы от покупателей</p>
+        </div>
+        {% endif %}
+
+        <!-- Orders Summary -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-blue-600 mb-2">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Ожидают</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'pending')|list|length }}</p>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-green-600 mb-2">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Оплачены</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'paid')|list|length }}</p>
+            </div>
+            
+            <div class="bg-red-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-red-600 mb-2">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Отменены</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'cancelled')|list|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

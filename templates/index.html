@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - GameShop{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">🎮 Добро пожаловать в GameShop!</h1>
+            <p class="text-xl mb-6">Лучшие игры, подписки и услуги для геймеров</p>
+            <a href="{{ url_for('shop.shop') }}" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg hover:bg-gray-100 transition duration-200 inline-flex items-center">
+                <i class="fas fa-store mr-2"></i>В магазин
+            </a>
+        </div>
+    </div>
+
+    <!-- Admin Actions -->
+    {% if current_user.is_authenticated and current_user.is_admin %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <i class="fas fa-crown text-yellow-400 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-sm font-medium text-yellow-800">Панель администратора</h3>
+                <div class="mt-2 flex space-x-4">
+                    <a href="{{ url_for('admin.add_news') }}" class="bg-yellow-500 hover:bg-yellow-400 text-white px-4 py-2 rounded text-sm transition duration-200">
+                        <i class="fas fa-plus mr-1"></i>Добавить новость
+                    </a>
+                    <a href="{{ url_for('admin.add_product') }}" class="bg-green-500 hover:bg-green-400 text-white px-4 py-2 rounded text-sm transition duration-200">
+                        <i class="fas fa-box mr-1"></i>Добавить товар
+                    </a>
+                    <a href="{{ url_for('admin.orders') }}" class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded text-sm transition duration-200">
+                        <i class="fas fa-shopping-cart mr-1"></i>Управление заказами
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- News Section -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-newspaper mr-3 text-blue-500"></i>Последние новости
+            </h2>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+            <a href="{{ url_for('admin.add_news') }}" class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-plus mr-2"></i>Добавить новость
+            </a>
+            {% endif %}
+        </div>
+
+        {% if news_list %}
+            <div class="space-y-6">
+                {% for news in news_list %}
+                <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded-r-lg">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ news.title }}</h3>
+                            <p class="text-gray-600 mb-3 whitespace-pre-line">{{ news.content }}</p>
+                            <div class="flex items-center text-sm text-gray-500">
+                                <i class="fas fa-user mr-1"></i>
+                                <span class="mr-4">{{ news.author }}</span>
+                                <i class="fas fa-calendar mr-1"></i>
+                                <span>{{ news.date_posted.strftime('%d.%m.%Y %H:%M') }}</span>
+                            </div>
+                        </div>
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                        <div class="ml-4">
+                            <a href="{{ url_for('admin.delete_news', news_id=news.id) }}" 
+                               class="text-red-500 hover:text-red-700 transition duration-200"
+                               onclick="return confirm('Удалить эту новость?')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-lg">Новостей пока нет</p>
+                {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="{{ url_for('admin.add_news') }}" class="text-blue-500 hover:text-blue-600 mt-2 inline-block">
+                    Добавить первую новость
+                </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="text-3xl text-blue-500 mb-2">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Игры</h3>
+            <p class="text-2xl font-bold text-gray-900">Популярные тайтлы</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="text-3xl text-green-500 mb-2">
+                <i class="fas fa-gem"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Подписки</h3>
+            <p class="text-2xl font-bold text-gray-900">Премиум доступ</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6 text-center">
+            <div class="text-3xl text-purple-500 mb-2">
+                <i class="fas fa-headset"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800">Поддержка</h3>
+            <p class="text-2xl font-bold text-gray-900">24/7 в Telegram</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

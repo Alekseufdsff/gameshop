@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GameShop{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .alert-success { background-color: #d1fae5; border-color: #10b981; color: #065f46; }
+        .alert-error { background-color: #fee2e2; border-color: #ef4444; color: #7f1d1d; }
+        .alert-warning { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
+        .alert-info { background-color: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <a href="{{ url_for('main.index') }}" class="text-2xl font-bold flex items-center">
+                    🎮 <span class="ml-2">GameShop</span>
+                </a>
+                
+                <div class="flex items-center space-x-6">
+                    <a href="{{ url_for('main.index') }}" class="hover:text-blue-200 transition duration-200 flex items-center">
+                        <i class="fas fa-newspaper mr-2"></i>Новости
+                    </a>
+                    <a href="{{ url_for('shop.shop') }}" class="hover:text-blue-200 transition duration-200 flex items-center">
+                        <i class="fas fa-store mr-2"></i>Магазин
+                    </a>
+                    <a href="{{ url_for('main.support') }}" class="hover:text-blue-200 transition duration-200 flex items-center">
+                        <i class="fas fa-headset mr-2"></i>Поддержка
+                    </a>
+                    
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="bg-yellow-500 hover:bg-yellow-400 px-4 py-2 rounded-lg transition duration-200 flex items-center">
+                            <i class="fas fa-crown mr-2"></i>Админка
+                        </a>
+                        {% endif %}
+                        
+                        <div class="relative group">
+                            <button class="hover:text-blue-200 transition duration-200 flex items-center">
+                                <i class="fas fa-user-circle mr-2 text-xl"></i>
+                                {{ current_user.username }}
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                <a href="{{ url_for('main.profile') }}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
+                                    <i class="fas fa-user mr-2"></i>Профиль
+                                </a>
+                                <a href="{{ url_for('main.my_purchases') }}" class="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white">
+                                    <i class="fas fa-shopping-bag mr-2"></i>Мои покупки
+                                </a>
+                                <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-gray-800 hover:bg-red-500 hover:text-white">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Выйти
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="hover:text-blue-200 transition duration-200 flex items-center">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Войти
+                        </a>
+                        <a href="{{ url_for('auth.register') }}" class="bg-blue-500 hover:bg-blue-400 px-4 py-2 rounded-lg transition duration-200">
+                            Регистрация
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg shadow-md border-l-4 flex items-center">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle text-2xl mr-3"></i>
+                        {% elif category == 'error' %}
+                            <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-triangle text-2xl mr-3"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle text-2xl mr-3"></i>
+                        {% endif %}
+                        <div>
+                            <span class="font-semibold">{{ message }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold mb-2 flex items-center">
+                        🎮 <span class="ml-2">GameShop</span>
+                    </h3>
+                    <p class="text-gray-400">Лучшие игры и подписки в одном месте</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <h4 class="font-semibold mb-2 text-lg">Поддержка</h4>
+                    <p class="text-gray-400 flex items-center justify-center md:justify-end">
+                        <i class="fab fa-telegram mr-2 text-blue-400"></i>
+                        Telegram: 
+                        <a href="https://t.me/AlekseyMainkraft" class="text-blue-300 hover:text-blue-200 ml-1 underline">
+                            @AlekseyMainkraft
+                        </a>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400">
+                <p>&copy; 2024 GameShop. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

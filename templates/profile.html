@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль - GameShop{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <!-- Profile Header -->
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                    {{ current_user.username[0].upper() }}
+                </div>
+                <div class="ml-6">
+                    <h1 class="text-3xl font-bold text-gray-800">{{ current_user.username }}</h1>
+                    <p class="text-gray-600 flex items-center">
+                        <i class="fas fa-envelope mr-2"></i>{{ current_user.email }}
+                        {% if current_user.is_admin %}
+                        <span class="ml-4 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-semibold flex items-center">
+                            <i class="fas fa-crown mr-1"></i>Администратор
+                        </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-gray-500">Зарегистрирован</p>
+                <p class="text-lg font-semibold text-gray-800">{{ current_user.date_created.strftime('%d.%m.%Y') }}</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-blue-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-blue-600 mb-2">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Всего покупок</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ purchases|length }}</p>
+            </div>
+            
+            <div class="bg-green-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-green-600 mb-2">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">Оплаченные</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ purchases|selectattr('status', 'equalto', 'paid')|list|length }}</p>
+            </div>
+            
+            <div class="bg-yellow-50 rounded-xl p-6 text-center">
+                <div class="text-2xl text-yellow-600 mb-2">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">В обработке</h3>
+                <p class="text-3xl font-bold text-gray-900">{{ purchases|selectattr('status', 'equalto', 'pending')|list|length }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex space-x-4 mb-8">
+            <a href="{{ url_for('main.my_purchases') }}" class="bg-blue-500 hover:bg-blue-400 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-shopping-bag mr-2"></i>Мои покупки
+            </a>
+            <a href="{{ url_for('shop.shop') }}" class="bg-green-500 hover:bg-green-400 text-white px-6 py-3 rounded-lg transition duration-200 flex items-center">
+                <i class="fas fa-store mr-2"></i>В магазин
+            </a>
+        </div>
+
+        <!-- Recent Purchases -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-history mr-3"></i>Последние покупки
+            </h2>
+            
+            {% if purchases %}
+                <div class="space-y-4">
+                    {% for purchase in purchases[:5] %}
+                    <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition duration-200">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold text-gray-800">{{ purchase.product.name }}</h3>
+                                <p class="text-gray-600 text-sm">{{ purchase.purchase_date.strftime('%d.%m.%Y %H:%M') }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-green-600">{{ purchase.product.price }} ₽</span>
+                                <div class="text-sm">
+                                    {% if purchase.status == 'paid' %}
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full">Оплачено</span>
+                                    {% elif purchase.status == 'pending' %}
+                                        <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">В обработке</span>
+                                    {% else %}
+                                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full">Отменено</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                {% if purchases|length > 5 %}
+                <div class="text-center mt-6">
+                    <a href="{{ url_for('main.my_purchases') }}" class="text-blue-600 hover:text-blue-500 font-semibold">
+                        Показать все покупки ({{ purchases|length }})
+                    </a>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-8">
+                    <i class="fas fa-shopping-bag text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500 text-lg">У вас пока нет покупок</p>
+                    <a href="{{ url_for('shop.shop') }}" class="text-blue-500 hover:text-blue-600 mt-2 inline-block">
+                        Сделать первую покупку
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

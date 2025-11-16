@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Админ панель - GameShop{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-4xl font-bold mb-2 flex items-center">
+                    <i class="fas fa-crown mr-4"></i>Панель администратора
+                </h1>
+                <p class="text-xl opacity-90">Управление магазином и заказами</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm opacity-80">Администратор</p>
+                <p class="text-2xl font-bold">{{ current_user.username }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-users text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Пользователи</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ stats.total_users }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-box text-green-600 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Товары</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ stats.total_products }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-shopping-cart text-yellow-600 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Всего заказов</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ stats.total_orders }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-clock text-red-600 text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-600">Ожидают</p>
+                    <p class="text-2xl font-bold text-gray-800">{{ stats.pending_orders }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Management Actions -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-cogs mr-3 text-blue-500"></i>Управление контентом
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+                <a href="{{ url_for('admin.add_news') }}" class="bg-blue-500 hover:bg-blue-400 text-white p-4 rounded-xl transition duration-200 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-newspaper text-2xl mr-4"></i>
+                        <div>
+                            <p class="font-semibold">Добавить новость</p>
+                            <p class="text-sm opacity-90">Опубликовать новость на главной</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                
+                <a href="{{ url_for('admin.add_product') }}" class="bg-green-500 hover:bg-green-400 text-white p-4 rounded-xl transition duration-200 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-box text-2xl mr-4"></i>
+                        <div>
+                            <p class="font-semibold">Добавить товар</p>
+                            <p class="text-sm opacity-90">Добавить новый товар в магазин</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                
+                <a href="{{ url_for('admin.orders') }}" class="bg-purple-500 hover:bg-purple-400 text-white p-4 rounded-xl transition duration-200 flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas fa-shopping-cart text-2xl mr-4"></i>
+                        <div>
+                            <p class="font-semibold">Управление заказами</p>
+                            <p class="text-sm opacity-90">Просмотр и обработка заказов</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-line mr-3 text-green-500"></i>Быстрый доступ
+            </h2>
+            <div class="space-y-4">
+                <a href="{{ url_for('shop.shop') }}" class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-store text-blue-500 text-xl mr-4"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Магазин</p>
+                        <p class="text-sm text-gray-600">Просмотр магазина как пользователь</p>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('main.index') }}" class="flex items-center p-4 border border-gray-200 rounded-xl hover:bg-gray-50 transition duration-200">
+                    <i class="fas fa-home text-green-500 text-xl mr-4"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Главная страница</p>
+                        <p class="text-sm text-gray-600">Вернуться на главную</p>
+                    </div>
+                </a>
+                
+                <div class="flex items-center p-4 border border-gray-200 rounded-xl bg-gray-50">
+                    <i class="fas fa-headset text-purple-500 text-xl mr-4"></i>
+                    <div>
+                        <p class="font-semibold text-gray-800">Поддержка</p>
+                        <p class="text-sm text-gray-600">Telegram: @AlekseyMainkraft</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Guide -->
+    <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-yellow-800 mb-4 flex items-center">
+            <i class="fas fa-lightbulb mr-3"></i>Инструкция для администратора
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-yellow-700">
+            <div class="space-y-2">
+                <p><span class="font-semibold">1. Добавление товаров:</span> Используйте форму "Добавить товар"</p>
+                <p><span class="font-semibold">2. Публикация новостей:</span> Новости появляются на главной странице</p>
+                <p><span class="font-semibold">3. Обработка заказов:</span> Проверяйте заказы в разделе "Управление заказами"</p>
+            </div>
+            <div class="space-y-2">
+                <p><span class="font-semibold">4. Статусы заказов:</span> "pending" - ожидает, "paid" - оплачен, "cancelled" - отменен</p>
+                <p><span class="font-semibold">5. Комментарии:</span> Оставляйте комментарии при изменении статуса заказа</p>
+                <p><span class="font-semibold">6. Ключи игр:</span> Отправляйте ключи через комментарии к оплаченным заказам</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
